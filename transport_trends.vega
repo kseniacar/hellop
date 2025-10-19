@@ -3,7 +3,8 @@
   "title": {
     "text": ["Mode of Transport in Australia over Time"],
     "subtitle": [
-      "Australian Bureau of Statistics. (2022, June 28). Transport: Census 2021. Retrieved from https://www.abs.gov.au/statistics/industry/tourism-and-transport/transport-census/2021",
+      "Australian Bureau of Statistics. (2022, June 28). Transport: Census 2021.",
+      "Retrieved from https://www.abs.gov.au/statistics/industry/tourism-and-transport/transport-census/2021",
       "Use the dropdown option to explore different modes"
     ],
     "anchor": "start",
@@ -157,3 +158,4 @@
     }
   ]
 }
+
