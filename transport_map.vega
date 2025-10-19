@@ -1,0 +1,256 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": ["Public Transport Use by State (%)"],
+    "subtitle": [
+      "Source: Australian Bureau of Statistics, Census 2021",
+      "Use the dropdown option to explore different map regions"
+    ],
+    "anchor": "start",
+    "fontSize": 18,
+    "subtitleColor": "gray",
+    "subtitleFontSize": 13,
+    "subtitlePadding": 10
+  },
+  "width": 800,
+  "height": 600,
+  "config": {
+    "legend": {
+      "labelFont": "helvetica",
+      "labelFontSize": 13,
+      "titleFont": "helvetica",
+      "titleFontSize": 13,
+      "titleLimit": 0,
+      "titleAnchor": "end",
+      "orient": "right"
+    }
+  },
+  "params": [
+    {
+      "name": "view",
+      "value": {"center": [135, -30], "scale": 800},
+      "bind": {
+        "input": "select",
+        "options": [
+          {"center": [135, -30], "scale": 800},
+          {"center": [135, -12], "scale": 1200},
+          {"center": [145, -15], "scale": 1300},
+          {"center": [150, -30], "scale": 1400},
+          {"center": [145, -38], "scale": 1500},
+          {"center": [118, -25], "scale": 1100},
+          {"center": [125, -15], "scale": 1200}
+        ],
+        "labels": [
+          "Centre Australia",
+          "North",
+          "North East", 
+          "East",
+          "South East",
+          "West",
+          "North West"
+        ],
+        "name": "Map Centre: "
+      }
+    }
+  ],
+  "projection": {
+    "type": "mercator",
+    "scale": {"expr": "view.scale"},
+    "center": {"expr": "view.center"}
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "aus_states_topo.json",
+        "format": {"type": "topojson", "feature": "ne_50m_admin_1_states_provinces"}
+      },
+      "transform": [
+        {
+          "lookup": "properties.name",
+          "from": {
+            "data": {"url": "transport_per_state.csv"},
+            "key": "state",
+            "fields": ["public_transport_pct"]
+          }
+        }, 
+        {
+          "calculate": "datum.public_transport_pct - 6.4",
+          "as": "deviation"
+        }
+      ],
+      "mark": {"type": "geoshape", "stroke": "dimgrey", "strokeWidth": 0.6},
+      "encoding": {
+        "color": {
+          "field": "public_transport_pct",
+          "type": "quantitative",
+          "title": "% Public Transport Commuters (average = 6.4%)",
+          "scale": {
+            "domain": [3, 4, 5, 6, 6.4, 6.7, 7, 7.2, 8, 9, 10],
+            "range": [
+              "#d8a5a5",
+              "#e0b0b0",
+              "#e8c3c3",
+              "#f2d9d9",
+              "#ffffff",
+              "#d6dcf5",
+              "#b8c8f0",
+              "#9ab4eb",
+              "#7ca0e6",
+              "#5e8ce1",
+              "#4a6896"
+            ]
+          },
+          "legend": {"orient": "right", "titlePadding": 10, "offset": -200}
+        },
+        "tooltip": [
+          {"field": "properties.name", "title": "State"},
+          {"field": "public_transport_pct", "title": "% Using Public Transport"},
+          {
+            "field": "deviation",
+            "title": "Deviation from Average (%)",
+            "format": "+.1f",
+            "formatType": "number",
+            "type": "quantitative"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "graticule20.topo.json",
+        "format": {"type": "topojson", "feature": "ne_50m_graticules_20"}
+      },
+      "mark": {"type": "geoshape", "fill": null, "stroke": "dimgray", "strokeWidth": 0.7, "strokeOpacity": 0.8}
+    },
+    {
+      "data": {
+        "values": [
+          {"lon": 120, "lat": -46, "label": "120°E"},
+          {"lon": 140, "lat": -45.5, "label": "140°E"},
+          {"lon": 156, "lat": -20, "label": "20°S"},
+          {"lon": 156, "lat": -40, "label": "40°S"}
+        ]
+      },
+      "mark": {"type": "text", "fontSize": 10, "color": "dimgray", "align": "center", "baseline": "middle"},
+      "encoding": {
+        "longitude": {"field": "lon"},
+        "latitude": {"field": "lat"},
+        "text": {"field": "label"}
+      }
+    },
+    {
+      "data": {"url": "aus_cities.csv"},
+      "mark": {"type": "point", "color": "black", "size": 30},
+      "encoding": {"longitude": {"field": "lon"}, "latitude": {"field": "lat"}}
+    },
+    {
+      "data": {"url": "aus_cities.csv"},
+      "transform": [{"calculate": "datum.pop / 1000", "as": "pop_thousands"}],
+      "mark": {
+        "type": "text",
+        "dx": 9,
+        "dy": 10,
+        "fontSize": 12,
+        "color": "black",
+        "align": "left",
+        "baseline": "middle",
+        "font": "helvetica"
+      },
+      "encoding": {
+        "longitude": {"field": "lon"},
+        "latitude": {"field": "lat"},
+        "text": {"field": "name"},
+        "tooltip": [
+          {"field": "name", "title": "City"},
+          {"field": "pop_thousands", "title": "Population (thousands)", "format": ".0f"}
+        ]
+      }
+    },
+    {
+      "data": {"url": "state_labels.csv"},
+      "mark": {
+        "type": "text",
+        "fontSize": 13,
+        "fontWeight": "bold",
+        "color": "black",
+        "align": "center",
+        "baseline": "middle",
+        "font": "helvetica"
+      },
+      "encoding": {"longitude": {"field": "lon"}, "latitude": {"field": "lat"}, "text": {"field": "state"}}
+    },
+{
+  "data": {
+    "values": [
+      {
+        "state": "WA",
+        "lon_start": 119,
+        "lat_start": -26.5,
+        "lon_end": 119,
+        "lat_end": -25.5,
+        "label": "Highest use nationally:\nDue to Perth’s cheap and efficient network"
+      },
+      {
+        "state": "NT",
+        "lon_start": 129,
+        "lat_start": -23,
+        "lon_end": 130,
+        "lat_end": -19.5,
+        "label": "Lowest use nationally:\nSparse population limits demand"
+      }
+    ]
+  },
+  "layer": [
+    {
+      "mark": {"type": "rule", "stroke": "floralwhite", "strokeWidth": 1.2, "opacity": 0.8},
+      "encoding": {
+        "longitude": {"field": "lon_start"},
+        "latitude": {"field": "lat_start"},
+        "longitude2": {"field": "lon_end"},
+        "latitude2": {"field": "lat_end"}
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "font": "helvetica",
+        "fontSize": 12,
+        "align": "left",
+        "baseline": "top",
+        "dx": 6,
+        "dy": 2,
+        "lineBreak": "\n",
+        "lineHeight": 14,
+        "stroke": "white",
+        "strokeWidth": 4,
+        "opacity": 0.8
+      },
+      "encoding": {
+        "longitude": {"field": "lon_start"},
+        "latitude": {"field": "lat_start"},
+        "text": {"field": "label"}
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "font": "helvetica",
+        "fontSize": 12,
+        "fill": "black",
+        "align": "left",
+        "baseline": "top",
+        "dx": 6,
+        "dy": 2,
+        "lineBreak": "\n",
+        "lineHeight": 14
+      },
+      "encoding": {
+        "longitude": {"field": "lon_start"},
+        "latitude": {"field": "lat_start"},
+        "text": {"field": "label"}
+      }
+    }
+  ]
+}
+  ]
+} 

@@ -1,0 +1,159 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": ["Mode of Transport in Australia over Time"],
+    "subtitle": [
+      "Australian Bureau of Statistics. (2022, June 28). Transport: Census 2021. Retrieved from https://www.abs.gov.au/statistics/industry/tourism-and-transport/transport-census/2021",
+      "Use the dropdown option to explore different modes"
+    ],
+    "anchor": "start",
+    "fontSize": 18,
+    "subtitleColor": "gray",
+    "subtitleFontSize": 13,
+    "subtitlePadding": 10
+  },
+  "width": 690,
+  "height": 600,
+  "config": {
+    "legend": {
+      "labelFont": "helvetica",
+      "titleFont": "helvetica",
+      "labelFontSize": 14,
+      "titleFontSize": 14,
+      "titleLimit": 0,
+      "titleAnchor": "end",
+      "orient": "right"
+    },
+    "axis": {
+      "labelFont": "Helvetica",
+      "labelFontSize": 13,
+      "titleFont": "Helvetica",
+      "titleFontSize": 14
+    }
+  },
+  "params": [
+    {
+      "name": "mode_select",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "options": ["All", "Car", "Rail", "Bus"],
+        "labels": ["All Modes", "Car", "Rail", "Bus"],
+        "name": "Transport Mode: "
+      }
+    }
+  ],
+  "data": {"url": "passenger_travel.csv"},
+  "transform": [
+    {
+      "fold": [
+        "Passenger cars (billion passenger kilometres)",
+        "Buses (billion passenger kilometres)",
+        "Rail (billion passenger kilometres)"
+      ],
+      "as": ["Mode", "Billion passenger km"]
+    },
+    {
+      "calculate": "datum['Mode'] == 'Passenger cars (billion passenger kilometres)' ? 'Car' : datum['Mode'] == 'Buses (billion passenger kilometres)' ? 'Bus' : 'Rail'",
+      "as": "ModeLabel"
+    },
+    {
+      "filter": "datum.ModeLabel === mode_select || mode_select === 'All'"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {"type": "line", "point": true, "interpolate": "monotone"},
+      "encoding": {
+        "x": {
+          "field": "Financial year",
+          "type": "ordinal",
+          "axis": {"labelAngle": -45, "title": "Financial Year"}
+        },
+        "y": {
+          "field": "Billion passenger km",
+          "type": "quantitative",
+          "title": "Billion Passenger Kilometres"
+        },
+        "color": {
+          "field": "ModeLabel",
+          "type": "nominal",
+          "title": "Transport Mode",
+          "scale": {
+            "domain": ["Car", "Rail", "Bus"],
+            "range": ["#685cc4", "#d49250", "#5cc46c"]
+          },
+          "legend": {
+            "titleFont": "helvetica",
+            "labelFont": "helvetica",
+            "titleLimit": 0,
+            "titleAnchor": "end",
+            "orient": "right"
+          }
+        },
+        "tooltip": [
+          {"field": "Financial year", "type": "ordinal", "title": "Year"},
+          {"field": "ModeLabel", "type": "nominal", "title": "Mode"},
+          {
+            "field": "Billion passenger km",
+            "type": "quantitative",
+            "title": "Passenger km",
+            "format": ".2f"
+          }
+        ]
+      }
+    },
+
+    {
+      "data": {
+        "values": [
+          {
+            "year": "2003",
+            "note": "Motorised transport peaks",
+            "color": "dimgray",
+            "align": "center"
+          },
+          {
+            "year": "2006",
+            "note": "Rail use surges"
+          },
+          {
+            "year": "2009",
+            "note": "Post-2008 plateau"
+          }
+        ]
+      },
+      "layer": [
+        {
+          "mark": {
+            "type": "rule",
+            "color": "gray",
+            "strokeWidth": 1,
+            "strokeDash": [3, 3],
+            "opacity": 0.6
+          },
+          "encoding": {
+            "x": {"field": "year", "type": "ordinal"}
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "font": "Helvetica",
+            "fontSize": 11,
+            "align": "center",
+            "baseline": "top",
+            "lineBreak": "\n",
+            "lineHeight": 14,
+            "fill": "dimgray"
+          },
+          "encoding": {
+            "x": {"field": "year", "type": "ordinal"},
+            "y": {"aggregate": "max", "type": "quantitative"},
+            "text": {"field": "note"}
+          }
+        }
+      ]
+    }
+  ]
+}

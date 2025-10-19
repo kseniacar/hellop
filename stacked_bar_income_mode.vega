@@ -1,0 +1,74 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": ["Weekly Household Transport Costs by Mode and Income Group"],
+    "subtitle": [
+      "Source: ABS Census on Transport 2021",
+      "Use the dropdown to filter by mode of transport"
+    ],
+    "anchor": "start",
+    "fontSize": 18,
+    "subtitleColor": "gray",
+    "subtitleFontSize": 13,
+    "subtitlePadding": 10
+  },
+  "width": 680,
+  "height": 450,
+  "params": [
+    {
+      "name": "modeSelect",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "options": ["All","Rail","Bus","Motorised Vehicles"],
+        "name": "Select Mode: "
+      }
+    }
+  ],
+
+  "data": {"url": "income_mode.csv"},
+  "transform": [
+    {"fold": ["Rail","Bus","Motorised Vehicles"], "as": ["Mode","Cost"]},
+    {"filter": "modeSelect == 'All' || datum.Mode == modeSelect"},
+    {
+      "calculate": "split(datum['Weekly Income'], ' ')[0]",
+      "as": "IncomeValue"
+    }
+  ],
+
+  "mark": {"type": "bar"},
+  "encoding": {
+    "x": {
+      "field": "Weekly Income",
+      "type": "ordinal",
+      "title": "Weekly Household Income",
+      "sort": ["$0-$399", "$400-$799", "$800-$1249", "$1250-$1999", "$2000+"],
+      "axis": {"labelAngle": -45}
+    },
+    "y": {
+      "aggregate": "sum",
+      "field": "Cost",
+      "type": "quantitative",
+      "title": "Weekly Transport Cost ($)"
+    },
+    "color": {
+      "field": "Mode",
+      "type": "nominal",
+      "title": "Transport Mode",
+      "scale": {
+        "domain": ["Rail","Bus","Motorised Vehicles"],
+        "range": ["#d49250","#5cc46c","#685cc4"]
+      }
+    },
+    "tooltip": [
+      {"field": "Weekly Income", "title": "Income"},
+      {"field": "Mode", "title": "Mode of Transport"},
+      {"aggregate": "sum","field": "Cost","title":"Total Cost ($)","format":","}
+    ]
+  },
+  "config": {
+    "axis":{"labelFont":"helvetica","titleFont":"helvetica"},
+    "legend":{"labelFont":"helvetica","titleFont":"helvetica"},
+    "style":{"cell":{"stroke":"transparent"}}
+  }
+}

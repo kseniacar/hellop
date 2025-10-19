@@ -1,0 +1,139 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": ["Australian Automobile Association"],
+    "subtitle": [
+      "Based on vehicle registration data by fuel type",
+      "Use the dropdown option to explore different fuel types"
+    ],
+    "anchor": "start",
+    "fontSize": 18,
+    "subtitleColor": "gray",
+    "subtitleFontSize": 13,
+    "subtitlePadding": 10
+  },
+  "width": 700,
+  "height": 400,
+  "data": {"url": "vehicle_type_time.csv"},
+  "transform": [
+    {"fold": ["ICE", "BEV", "PHEV", "Hybrid", "HFCEV"], "as": ["Fuel Type", "Count"]},
+    {"filter": "datum['Vehicle Type'] != 'All vehicle types'"},
+    {"filter": "datum['Fuel Type'] != 'HFCEV'"},
+    {
+      "calculate": "datum['Fuel Type'] == 'ICE' ? 1 : datum['Fuel Type'] == 'Hybrid' ? 2 : datum['Fuel Type'] == 'PHEV' ? 3 : 4",
+      "as": "stackOrder"
+    },
+    {
+      "filter": "fuelSelect == 'All' || fuelSelect == 'Electric Group' && datum['Fuel Type'] != 'ICE' || datum['Fuel Type'] == fuelSelect"
+    }
+  ],
+  "params": [
+    {
+      "name": "fuelSelect",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "options": ["All", "Electric Group", "ICE", "Hybrid", "BEV", "PHEV"],
+        "name": "Select Fuel Type: "
+      }
+    }
+  ],
+  "layer": [
+    {
+      "mark": {"type": "area", "interpolate": "monotone"},
+      "encoding": {
+        "x": {
+          "field": "Period",
+          "type": "ordinal",
+          "title": "Year",
+          "scale": {"domain": ["2022", "2023", "2024", "2025"]},
+          "axis": {"labelAngle": -45}
+        },
+        "y": {
+          "aggregate": "sum",
+          "field": "Count",
+          "type": "quantitative",
+          "title": "Number of Vehicles",
+          "axis": {
+            "tickCount": {"signal": "ceil(height/80)"}
+          }
+        },
+        "color": {
+          "field": "Fuel Type",
+          "type": "nominal",
+          "scale": {
+            "domain": ["ICE", "Hybrid", "BEV", "PHEV"],
+            "range": ["#685cc4", "#FF91A4", "#FFA364", "#4ECDC4"]
+          },
+          "title": "Fuel Type"
+        },
+        "order": {"field": "stackOrder", "type": "quantitative"},
+        "tooltip": [
+          {"field": "Period", "title": "Year"},
+          {"field": "Fuel Type", "title": "Fuel"},
+          {
+            "aggregate": "sum",
+            "field": "Count",
+            "type": "quantitative",
+            "title": "Vehicles",
+            "format": ","
+          }
+        ]
+      }
+    },
+{
+  "data": {
+    "values": [
+      {"year": "2024", "note": "2024 peak\nEV incentives + fleet upgrades", "dx": 0, "dy": -10},
+      {"year": "2025", "note": "2025 dip\nSofter demand + fewer subsidies", "dx": 0, "dy": -10}
+    ]
+  },
+  "layer": [
+    {
+      "mark": {"type": "rule", "color": "gray", "strokeWidth": 1, "strokeDash": [3,3], "opacity": 0.6},
+      "encoding": {"x": {"field": "year", "type": "ordinal"}}
+    },
+    {
+      "mark": {
+        "type": "text",
+        "font": "helvetica",
+        "fontSize": 11,
+        "align": "center",
+        "baseline": "bottom",
+        "lineBreak": "\n",
+        "lineHeight": 10,
+        "stroke": "white",
+        "strokeWidth": 4,
+        "opacity": 0.8
+      },
+      "encoding": {
+        "x": {"field": "year", "type": "ordinal"},
+        "y": {"aggregate": "max", "type": "quantitative"},
+        "text": {"field": "note"}
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "font": "helvetica",
+        "fontSize": 11,
+        "align": "center",
+        "baseline": "bottom",
+        "lineBreak": "\n",
+        "lineHeight": 10,
+        "fill": "black"
+      },
+      "encoding": {
+        "x": {"field": "year", "type": "ordinal"},
+        "y": {"aggregate": "max", "type": "quantitative"},
+        "text": {"field": "note"}
+      }
+    }
+  ]
+}
+
+  ],
+  "config": {
+    "axis": {"labelFont": "helvetica", "titleFont": "helvetica"}
+  }
+}

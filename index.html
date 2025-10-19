@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Australian Transport Dashboard</title>
+
+  <!-- vega libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+  <!-- styles -->
+  <style>
+  @media (max-width: 1000px) {
+  .vis-container {
+    flex-direction: column !important;
+  }
+  .vis-container > div {
+    max-width: 100% !important;
+  }
+  }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f4f3ff;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      text-align: center;
+      padding: 50px 20px 20px;
+      background: linear-gradient(135deg, #5c6bc0, #7986cb);
+      color: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 32px;
+      margin: 0;
+      font-weight: 700;
+    }
+
+    header p {
+      font-size: 16px;
+      margin-top: 10px;
+      opacity: 0.9;
+    }
+
+    main {
+      max-width: 1300px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .vis-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      padding: 25px;
+      margin-bottom: 60px;
+      overflow-x: auto;
+      transition: transform 0.2s ease;
+    }
+
+    .vis-container:hover {
+      transform: translateY(-3px);
+    }
+
+    .vis-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #444;
+    }
+
+    /* Tooltips */
+    .vg-tooltip td.key {
+      color: #000 !important;
+      font-weight: 700 !important;
+      padding-right: 6px !important;
+      text-align: left !important;
+    }
+    .vg-tooltip td.value {
+      color: #666 !important;
+      font-weight: 300 !important;
+    }
+    .vg-tooltip {
+      border-radius: 6px !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif !important;
+      font-size: 11px !important;
+      background: #fff !important;
+      border: 1px solid rgba(0,0,0,0.08) !important;
+    }
+
+    .vega-embed {
+      width: 100%;
+      overflow: hidden;
+    }
+    .analysis-box {
+  flex: 1;
+  max-width: 360px;
+  min-width: 300px;
+  background: #fafafa;            /* light background for contrast */
+  border-left: 3px solid #ddd;    /* subtle divider line */
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  align-self: stretch;            /* matches chart height */
+}
+
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Australian Transport Data Dashboard</h1>
+    <p>Exploring public transport use, travel patterns, affordability, and income-based travel costs across Australia</p>
+    <p>Created by Ksenia Carvalho (35074353)</p>
+  </header>
+
+<main>
+
+  <!-- ===== TRANSPORT USE SECTION ===== -->
+  <h2 style="font-size:28px; margin:60px 0 20px; border-bottom:4px solid #5c6bc0; padding-bottom:8px; color:#333;">
+    Transport Use & Behaviour
+  </h2>
+
+  <!-- map -->
+  <div class="vis-container" style="display: flex; gap: 30px; align-items: flex-start;">
+    <div style="flex: 3;">
+      <div class="vis-title">How many people use Public Transport? (2021)</div>
+      <div id="mapVis"></div>
+    </div>
+
+    <div style="flex: 1; max-width: 350px;">
+      <h3 style="margin-top:0;">Which states rely most on public transport?</h3>
+      <p style="font-size:15px; line-height:1.5; color:#444;">
+        Public transport in Australia consists of <b>trains</b>, <b>buses</b>, and <b>trams</b>.
+        Usage varies by state, influenced by population density and urban accessibility.
+        <br><br>
+        Western Australia shows the <b>highest share</b> of commuters using public transport,
+        while the Northern Territory has the <b>lowest</b>. East coast states like NSW and Victoria
+        report above-average usage due to metropolitan train networks.
+      </p>
+    </div>
+  </div>
+
+  <!-- line chart -->
+  <div class="vis-container" style="display: flex; gap: 30px; align-items: flex-start;">
+    <div style="flex: 3;">
+      <div class="vis-title">How have main modes of transport changed over time? (1999–2016)</div>
+      <div id="lineVis"></div>
+    </div>
+
+    <div class="analysis-box">
+      <h3 style="margin-top:0;">How are transport modes evolving?</h3>
+      <p style="font-size:15px; line-height:1.6; color:#444;">
+        This chart shows passenger travel by <b>motor vehicles</b>, <b>rail</b>, and <b>bus</b> between 1999–2016.
+        Car travel dominates but peaks around 2003–2004, while rail grows rapidly between 2004–2008 due to
+        infrastructure investment. After 2008, usage plateaus as congestion and cost pressures increase.
+      </p>
+    </div>
+  </div>
+
+
+  <!-- ===== COST & EQUITY SECTION ===== -->
+  <h2 style="font-size:28px; margin:60px 0 20px; border-bottom:4px solid #ff9800; padding-bottom:8px; color:#333;">
+    Cost & Affordability
+  </h2>
+
+  <!-- stacked bar -->
+  <div class="vis-container" style="display: flex; gap: 30px; align-items: flex-start;">
+    <div style="flex: 3;">
+      <div class="vis-title">How different income classes commute (2021)</div>
+      <div id="barchartVis"></div>
+    </div>
+
+    <div class="analysis-box">
+      <h3 style="margin-top:0;">Transport costs and income disparity</h3>
+      <p style="font-size:15px; line-height:1.6; color:#444;">
+        This stacked bar chart visualises how transport spending varies by <b>income quintile</b>.
+        Lower-income groups spend a greater proportion on <b>public or shared transport</b>,
+        while higher-income groups rely more on <b>cars</b> and <b>taxis</b>.
+        <br><br>
+        The data highlights cost inequity — transport affordability decreases sharply for
+        low-income Australians, reinforcing the need for accessible public options.
+      </p>
+    </div>
+  </div>
+
+  <!-- heatmap -->
+  <div class="vis-container" style="display: flex; gap: 30px; align-items: flex-start;">
+    <div style="flex: 3;">
+      <div class="vis-title">How affordable is transport across Australia? (2020–2025)</div>
+      <div id="heatmapVis"></div>
+    </div>
+
+    <div class="analysis-box">
+      <h3 style="margin-top:0;">Affordability trends by state</h3>
+      <p style="font-size:15px; line-height:1.6; color:#444;">
+        The heatmap tracks the <b>Transport Affordability Index</b> over time.
+        Rising values indicate households spending more of their income on commuting.
+        <br><br>
+        From 2020–2025, states like <b>NSW</b> and <b>VIC</b> show consistent increases,
+        reflecting rising fuel prices and transport inflation, while regional states
+        remain more stable due to lower average costs and shorter distances.
+      </p>
+    </div>
+  </div>
+
+
+  <!-- ===== CLIMATE & ENERGY SECTION ===== -->
+  <h2 style="font-size:28px; margin:60px 0 20px; border-bottom:4px solid #4caf50; padding-bottom:8px; color:#333;">
+    Climate & Energy Transition
+  </h2>
+
+  <!-- streamgraph -->
+  <div class="vis-container" style="display: flex; gap: 30px; align-items: flex-start;">
+    <div style="flex: 3;">
+      <div class="vis-title">Transition of Vehicle Fuels in Australia (2022–2025)</div>
+      <div id="streamgraphVis"></div>
+    </div>
+
+    <div class="analysis-box">
+      <h3 style="margin-top:0;">Are we becoming greener?</h3>
+      <p style="font-size:15px; line-height:1.6; color:#444;">
+        This visualisation tracks the shift in <b>vehicle fuel types</b> from 2022–2025,
+        highlighting Australia’s transition toward cleaner transport energy.
+        <br><br>
+        <b>2024 Peak:</b> EV sales rose sharply through incentives and fleet conversions.<br>
+        <b>2025 Dip:</b> A minor drop as the market stabilised and subsidies eased.<br><br>
+        Internal combustion engines continue to decline, replaced by <b>BEV</b> and <b>Hybrid</b> vehicles.
+      </p>
+    </div>
+  </div>
+
+  <!-- ridgeplot -->
+  <div class="vis-container" style="display: flex; gap: 30px; align-items: flex-start;">
+    <div style="flex: 3;">
+      <div class="vis-title">How do vehicle emissions vary by type?</div>
+      <div id="ridgeplotVis"></div>
+    </div>
+
+    <div class="analysis-box">
+      <h3 style="margin-top:0;">Emission trends by transport mode</h3>
+      <p style="font-size:15px; line-height:1.6; color:#444;">
+        This ridge plot compares <b>emissions over time</b> of various transport types over the years.
+        <br><br>
+        Road vehicles dominate emissions output, but notable reductions occur after 2020 which may be due to COVID-19 impacts.
+        <br><br>
+        Aviation remains high with post-pandemic recovery, while rail maintains
+        low, stable emissions — reinforcing its sustainability advantage even through crises.
+      </p>
+    </div>
+  </div>
+
+</main>
+ 
+  <!-- vega embeds -->
+  <script>
+    vegaEmbed('#mapVis', 'transport_map.vega', {actions: false})
+      .then(() => console.log("map visualisation loaded."))
+      .catch(console.error);
+
+    vegaEmbed('#barchartVis', 'stacked_bar_income_mode.vega', {actions: false})
+      .then(() => console.log("bar chart loaded."))
+      .catch(console.error);
+
+    vegaEmbed('#lineVis', 'transport_trends.vega', {actions: false})
+      .then(() => console.log("line chart loaded."))
+      .catch(console.error);
+
+    vegaEmbed('#heatmapVis', 'heatmap_cost.vega', {actions: false})
+      .then(() => console.log("heatmap loaded."))
+      .catch(console.error);
+    
+      vegaEmbed('#streamgraphVis', 'streamgraph_vehicle_type_time.vega', {actions: false})
+      .then(() => console.log("stream graphchart loaded."))
+      .catch(console.error);
+
+      vegaEmbed('#ridgeplotVis', 'ridge_plot_emissions.vega', {actions: false})
+      .then(() => console.log("ridge plot loaded."))
+      .catch(console.error);
+  </script>
+</body>
+</html>
