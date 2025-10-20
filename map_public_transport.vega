@@ -1,14 +1,20 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": ["Public Transport Use by State (%)"],
+    "text": ["Public transport use (%) by state (2021)"],
     "subtitle": [
-      "Source: Australian Bureau of Statistics, Census 2021",
-      "Use the dropdown option to explore different map regions"
+      "Use the dropdown option to explore different map regions",
+      "",
+      "Source: Australian Bureau of Statistics (ABS). (2021). Transport data summary 2021 (Table 3). In Transport Census, 2021. Data retrieved and",
+      "visualisation created October 10, 2025, from https://www.abs.gov.au/statistics/industry/tourism-and-transport/transport-census/2021",
+      "",
+      ""
     ],
     "anchor": "start",
+    "font": "roboto",
     "fontSize": 18,
     "subtitleColor": "gray",
+    "subtitleFont": "roboto",
     "subtitleFontSize": 13,
     "subtitlePadding": 10
   },
@@ -16,13 +22,15 @@
   "height": 600,
   "config": {
     "legend": {
-      "labelFont": "helvetica",
-      "labelFontSize": 13,
       "titleFont": "helvetica",
-      "titleFontSize": 13,
+      "titleFontSize": 13,      
+      "labelFont": "helvetica",
+      "labelFontSize": 13,      
       "titleLimit": 0,
       "titleAnchor": "end",
-      "orient": "right"
+      "orient": "right",
+      "titlePadding": 10, 
+      "offset": -235
     }
   },
   "params": [
@@ -49,7 +57,7 @@
           "West",
           "North West"
         ],
-        "name": "Map Centre: "
+        "name": "Select Map Centre: "
       }
     }
   ],
@@ -99,8 +107,7 @@
               "#5e8ce1",
               "#4a6896"
             ]
-          },
-          "legend": {"orient": "right", "titlePadding": 10, "offset": -200}
+          }
         },
         "tooltip": [
           {"field": "properties.name", "title": "State"},
@@ -154,7 +161,7 @@
         "color": "black",
         "align": "left",
         "baseline": "middle",
-        "font": "helvetica"
+        "font": "Roboto"
       },
       "encoding": {
         "longitude": {"field": "lon"},
