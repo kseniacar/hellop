@@ -1,0 +1,111 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Transport emissions by type of transport over time (2015-2022)",
+    "subtitle": [
+      "Source: Bureau of Infrastructure and Transport Research Economics (BITRE). (2023). Australian infrastructure and transport statistics",
+      "yearbook 2023 - Transport, energy and environment (Table 11.4). Data retrieved and visualisation created October 18, 2025,",
+      "from https://www.bitre.gov.au/publications/2023/australian-infrastructure-and-transport-statistics-yearbook-2023/transport-energy-environment",
+      ""
+    ],
+    "anchor": "start",
+    "font": "roboto",
+    "fontSize": 18,
+    "subtitleColor": "gray",
+    "subtitleFont": "roboto",
+    "subtitleFontSize": 13,
+    "subtitlePadding": 10
+  },
+  "data": {"url": "transport_emissions.csv"},
+  "config": {
+    "axis": {
+      "labelFont": "Roboto",
+      "labelFontSize": 13,
+      "labelColor": "#535353",
+      "titleFont": "Roboto",
+      "titleFontSize": 14,
+      "titleColor": "#2e2e2e"
+    }
+  },
+  "transform": [
+    {
+      "fold": ["Motorised vehicles", "Rail", "Maritime", "Aviation"],
+      "as": ["Mode", "Emissions"]
+    },
+    {"calculate": "datum.Emissions / 1000", "as": "Emissions_kt"},
+    {"calculate": "datum.Emissions_kt * 4", "as": "Scaled"},
+    {
+    "filter": "mode_select == 'All' || datum.Mode == mode_select || (mode_select == 'Exclude Motorised' && datum.Mode != 'Motorised vehicles')"
+  }
+  ],
+  "facet": {
+    "row": {
+      "field": "Mode",
+      "type": "nominal",
+      "header": {
+      "labelFont": "Roboto",
+      "labelFontSize": 13,
+      "labelColor": "#535353",
+      "titleFont": "Roboto",
+      "titleFontSize": 14,
+      "titleColor": "#2e2e2e",
+      "titleFontWeight": "bold"
+      }
+    }
+  },
+  "spec": {
+    "width": 690,
+    "height": 80,
+    "mark": {
+      "type": "area",
+      "interpolate": "monotone",
+      "fillOpacity": 0.85,
+      "stroke": "black",
+      "strokeWidth": 0.7
+    },
+    "encoding": {
+      "x": {
+        "field": "year",
+        "type": "ordinal",
+        "title": "Year",
+        "axis": {
+          "labelAngle": -45,
+          "titlePadding": 15
+        }
+      },
+      "y": {
+        "field": "Scaled",
+        "type": "quantitative",
+        "title": "Mode",
+        "axis": null
+
+      },
+      "color": {
+        "field": "Mode",
+        "type": "nominal",
+        "legend": null,
+        "scale": {
+          "domain": ["Rail", "Motorised vehicles", "Maritime", "Aviation"],
+          "range": ["#d49250", "#685cc4", "#4DB2F0", "#4D99F0"]
+        }
+      },
+      "tooltip": [
+        {"field": "year", "type": "ordinal", "title": "Year"},
+        {"field": "Mode", "type": "nominal", "title": "Mode"},
+        {"field": "Emissions_kt", "type": "quantitative", "title": "Emissions (kt CO₂-e)"}
+      ]
+    }
+  },
+  "params": [
+  {
+    "name": "mode_select",
+    "value": "All",
+    "bind": {
+      "input": "select",
+      "options": ["All", "Exclude Motorised"],
+      "labels": ["All Modes", "Exclude Motorised Vehicles"],
+      "name": "Select Transport Type: "
+    }
+  }
+]
+}
