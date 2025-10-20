@@ -92,7 +92,7 @@
       "tooltip": [
         {"field": "year", "type": "ordinal", "title": "Year"},
         {"field": "Mode", "type": "nominal", "title": "Mode"},
-        {"field": "Emissions_kt", "type": "quantitative", "title": "Emissions (kt CO₂-e)"}
+        {"field": "Emissions_kt", "type": "quantitative", "title": "Emissions (giga tonnes CO₂)"}
       ]
     }
   },
@@ -109,3 +109,4 @@
   }
 ]
 }
+
