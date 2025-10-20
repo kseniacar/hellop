@@ -1,41 +1,70 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": ["Weekly Household Transport Costs by Mode and Income Group"],
+    "text": ["Number of commuters by mode and weekly income (2021)"],
     "subtitle": [
-      "Source: ABS Census on Transport 2021",
-      "Use the dropdown to filter by mode of transport"
+      "Use the dropdown to filter by mode of transport",
+      "",
+      "Source: Australian Bureau of Statistics (ABS). (2021). Transport data summary 2021 (Table 6). In Transport Census, 2021. Data retrieved",
+      "and visualisation created October 14, 2025, from https://www.abs.gov.au/statistics/industry/tourism-and-transport/transport-census/2021",
+      ""
     ],
     "anchor": "start",
+    "font": "roboto",
     "fontSize": 18,
     "subtitleColor": "gray",
+    "subtitleFont": "roboto",
     "subtitleFontSize": 13,
     "subtitlePadding": 10
   },
-  "width": 680,
+  "width": 665,
   "height": 450,
-  "params": [
-    {
-      "name": "modeSelect",
-      "value": "All",
-      "bind": {
-        "input": "select",
-        "options": ["All","Rail","Bus","Motorised Vehicles"],
-        "name": "Select Mode: "
-      }
-    }
-  ],
-
   "data": {"url": "income_mode.csv"},
+  "config": {
+    "axis": {
+      "labelFont": "Roboto",
+      "labelFontSize": 13,
+      "labelColor": "#535353",
+      "titleFont": "Roboto",
+      "titleFontSize": 14,
+      "titleColor": "#2e2e2e"
+    },
+    "legend": {
+      "labelFont": "Roboto",
+      "labelFontSize": 13,
+      "titleFont": "Roboto",
+      "titleFontSize": 13,
+      "titleLimit": 0,
+      "titleAnchor": "end",
+      "orient": "right",
+      "offset": 10
+    },
+    "style": {"cell": {"stroke": "transparent"}}
+  },
   "transform": [
-    {"fold": ["Rail","Bus","Motorised Vehicles"], "as": ["Mode","Cost"]},
-    {"filter": "modeSelect == 'All' || datum.Mode == modeSelect"},
+    {"fold": ["Bus","Car","Rail"], "as": ["Mode","Cost"]},
+    {"filter": "modeSelect == 'All' || datum.Mode == modeSelect || (modeSelect == 'No Car' && datum.Mode != 'Car')"},
     {
-      "calculate": "split(datum['Weekly Income'], ' ')[0]",
-      "as": "IncomeValue"
+      "joinaggregate": [{"op": "sum", "field": "Cost", "as": "TotalForIncome"}],
+      "groupby": ["Weekly Income"]
+    },
+    {
+      "calculate": "(datum.Cost / datum.TotalForIncome) * 100",
+      "as": "PercentOfIncomeGroup"
     }
   ],
-
+  "params": [
+  {
+    "name": "modeSelect",
+    "value": "All",
+    "bind": {
+      "input": "select",
+      "options": ["All","No Car","Car","Rail","Bus"],
+      "labels": ["All Modes","Public Transport","Car","Rail","Bus"],
+      "name": "Select Transport Mode: "
+    }
+  }
+], 
   "mark": {"type": "bar"},
   "encoding": {
     "x": {
@@ -43,32 +72,37 @@
       "type": "ordinal",
       "title": "Weekly Household Income",
       "sort": ["$0-$399", "$400-$799", "$800-$1249", "$1250-$1999", "$2000+"],
-      "axis": {"labelAngle": -45}
+      "axis": {
+        "labelAngle": -45,
+        "titlePadding": 15
+      }
     },
     "y": {
       "aggregate": "sum",
       "field": "Cost",
       "type": "quantitative",
-      "title": "Weekly Transport Cost ($)"
-    },
+      "title": "Number of Commuters",
+      "axis": {"titlePadding": 15}
+      },
     "color": {
       "field": "Mode",
       "type": "nominal",
       "title": "Transport Mode",
       "scale": {
-        "domain": ["Rail","Bus","Motorised Vehicles"],
-        "range": ["#d49250","#5cc46c","#685cc4"]
+        "domain": ["Car","Rail","Bus"],
+        "range": ["#685cc4","#d49250","#5cc46c"]
       }
     },
     "tooltip": [
       {"field": "Weekly Income", "title": "Income"},
       {"field": "Mode", "title": "Mode of Transport"},
-      {"aggregate": "sum","field": "Cost","title":"Total Cost ($)","format":","}
+      {"aggregate": "sum", "field": "Cost", "title": "Commuters", "format": ","},
+      {
+        "field": "PercentOfIncomeGroup",
+        "type": "quantitative",
+        "title": "Share of Income Group (%)",
+        "format": ".1f"
+      }
     ]
-  },
-  "config": {
-    "axis":{"labelFont":"helvetica","titleFont":"helvetica"},
-    "legend":{"labelFont":"helvetica","titleFont":"helvetica"},
-    "style":{"cell":{"stroke":"transparent"}}
   }
 }
