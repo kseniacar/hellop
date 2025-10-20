@@ -42,17 +42,17 @@
     "style": {"cell": {"stroke": "transparent"}}
   },
   "transform": [
-    {"fold": ["Bus","Car","Rail"], "as": ["Mode","Cost"]},
-    {"filter": "modeSelect == 'All' || datum.Mode == modeSelect || (modeSelect == 'No Car' && datum.Mode != 'Car')"},
-    {
-      "joinaggregate": [{"op": "sum", "field": "Cost", "as": "TotalForIncome"}],
-      "groupby": ["Weekly Income"]
-    },
-    {
-      "calculate": "(datum.Cost / datum.TotalForIncome) * 100",
-      "as": "PercentOfIncomeGroup"
-    }
-  ],
+  {"fold": ["Bus","Car","Rail"], "as": ["Mode","Cost"]},
+  {
+    "joinaggregate": [{"op": "sum", "field": "Cost", "as": "TotalForIncome"}],
+    "groupby": ["Weekly Income"]
+  },
+  {
+    "calculate": "(datum.Cost / datum.TotalForIncome) * 100",
+    "as": "PercentOfIncomeGroup"
+  },
+  {"filter": "modeSelect == 'All' || datum.Mode == modeSelect || (modeSelect == 'No Car' && datum.Mode != 'Car')"}
+],
   "params": [
   {
     "name": "modeSelect",
@@ -64,7 +64,7 @@
       "name": "Select Transport Mode: "
     }
   }
-], 
+],
   "mark": {"type": "bar"},
   "encoding": {
     "x": {
