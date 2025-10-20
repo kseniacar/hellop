@@ -1,0 +1,166 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": ["Vehicle sales by fuel over time (2022-2025)"],
+    "subtitle": [
+      "Use the dropdown option to explore different fuel types",
+      "",
+      "Source: Australian Automobile Association (AAA). (n.d.). Electric vehicle research and data. Data retrieved and visualisation created",
+      "October 17, 2025, from https://www.aaa.asn.au/research-data/electric-vehicle/",
+      ""
+    ],
+    "anchor": "start",
+    "font": "roboto",
+    "fontSize": 18,
+    "subtitleColor": "gray",
+    "subtitleFont": "roboto",
+    "subtitleFontSize": 13,
+    "subtitlePadding": 10
+  },
+  "width": 660,
+  "height": 400,
+  "data": {"url": "vehicle_type_time.csv"},
+  "config": {
+    "axis": {
+      "labelFont": "Roboto",
+      "labelFontSize": 13,
+      "labelColor": "#535353",
+      "titleFont": "Roboto",
+      "titleFontSize": 14,
+      "titleColor": "#2e2e2e"
+    },
+    "legend": {
+      "labelFont": "Roboto",
+      "labelFontSize": 13,
+      "titleFont": "Roboto",
+      "titleFontSize": 13,
+      "titleLimit": 0,
+      "titleAnchor": "end",
+      "orient": "right",
+      "offset": 10
+    }
+  },
+  "transform": [
+    {"fold": ["ICE", "BEV", "PHEV", "Hybrid", "HFCEV"], "as": ["Fuel Type", "Count"]},
+    {"filter": "datum['Vehicle Type'] != 'All vehicle types'"},
+    {"filter": "datum['Fuel Type'] != 'HFCEV'"},
+    {
+      "calculate": "datum['Fuel Type'] == 'ICE' ? 1 : datum['Fuel Type'] == 'Hybrid' ? 2 : datum['Fuel Type'] == 'PHEV' ? 3 : 4",
+      "as": "stackOrder"
+    },
+    {
+      "filter": "fuelSelect == 'All' || fuelSelect == 'Electric Group' && datum['Fuel Type'] != 'ICE' || datum['Fuel Type'] == fuelSelect"
+    }
+  ],
+  "params": [
+    {
+      "name": "fuelSelect",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "options": ["All", "Electric Group", "ICE", "Hybrid", "BEV", "PHEV"],
+        "name": "Select Fuel Type: "
+      }
+    }
+  ],
+  "layer": [
+    {
+      "mark": {"type": "area", "interpolate": "monotone"},
+      "encoding": {
+        "x": {
+          "field": "Period",
+          "type": "ordinal",
+          "title": "Year",
+          "scale": {
+            "domain": ["2022", "2023", "2024", "2025"]
+          },
+          "axis": {
+            "labelAngle": -45,
+            "titlePadding": 15
+          }
+        },
+        "y": {
+          "aggregate": "sum",
+          "field": "Count",
+          "type": "quantitative",
+          "title": "Number of Vehicles",
+          "axis": {
+            "tickCount": {"signal": "ceil(height/80)"},
+            "titlePadding": 15
+          }
+        },
+        "color": {
+          "field": "Fuel Type",
+          "type": "nominal",
+          "scale": {
+            "domain": ["ICE", "Hybrid", "BEV", "PHEV"],
+            "range": ["#685cc4", "#FF91A4", "#F0D04D", "#4ECDC4"]
+          },
+          "title": "Vehicle Fuel Type"
+        },
+        "order": {"field": "stackOrder", "type": "quantitative"},
+        "tooltip": [
+          {"field": "Period", "title": "Year"},
+          {"field": "Fuel Type", "title": "Fuel"},
+          {
+            "aggregate": "sum",
+            "field": "Count",
+            "type": "quantitative",
+            "title": "Vehicles",
+            "format": ","
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {"year": "2024", "note": "2024 peak\nEV incentives + fleet upgrades", "dx": 0, "dy": -10},
+          {"year": "2025", "note": "2025 dip\nSofter demand + fewer subsidies", "dx": 0, "dy": -10}
+        ]
+      },
+      "layer": [
+        {
+          "mark": {"type": "rule", "color": "gray", "strokeWidth": 1, "strokeDash": [3,3], "opacity": 0.6},
+          "encoding": {"x": {"field": "year", "type": "ordinal"}}
+        },
+        {
+          "mark": {
+            "type": "text",
+            "font": "Roboto",
+            "fontSize": 11,
+            "align": "center",
+            "baseline": "bottom",
+            "lineBreak": "\n",
+            "lineHeight": 10,
+            "stroke": "white",
+            "strokeWidth": 4,
+            "opacity": 0.8
+          },
+          "encoding": {
+            "x": {"field": "year", "type": "ordinal"},
+            "y": {"aggregate": "max", "type": "quantitative"},
+            "text": {"field": "note"}
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "font": "Roboto",
+            "fontSize": 11,
+            "align": "center",
+            "baseline": "bottom",
+            "lineBreak": "\n",
+            "lineHeight": 10,
+            "fill": "black"
+          },
+          "encoding": {
+            "x": {"field": "year", "type": "ordinal"},
+            "y": {"aggregate": "max", "type": "quantitative"},
+            "text": {"field": "note"}
+          }
+        }
+      ]
+    }
+  ]
+}
