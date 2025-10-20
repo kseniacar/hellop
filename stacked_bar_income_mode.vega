@@ -42,16 +42,18 @@
     "style": {"cell": {"stroke": "transparent"}}
   },
   "transform": [
-  {"fold": ["Bus","Car","Rail"], "as": ["Mode","Cost"]},
+  {"fold": ["Bus", "Car", "Rail"], "as": ["Mode", "Cost"]},
   {
-    "joinaggregate": [{"op": "sum", "field": "Cost", "as": "TotalForIncome"}],
+    "filter": "modeSelect == 'All' || datum.Mode == modeSelect || (modeSelect == 'No Car' && datum.Mode != 'Car')"
+  },
+  {
+    "joinaggregate": [{"op": "sum", "field": "Cost", "as": "FilteredTotalForIncome"}],
     "groupby": ["Weekly Income"]
   },
   {
-    "calculate": "(datum.Cost / datum.TotalForIncome) * 100",
+    "calculate": "(datum.Cost / datum.FilteredTotalForIncome) * 100",
     "as": "PercentOfIncomeGroup"
-  },
-  {"filter": "modeSelect == 'All' || datum.Mode == modeSelect || (modeSelect == 'No Car' && datum.Mode != 'Car')"}
+  }
 ],
   "params": [
   {
