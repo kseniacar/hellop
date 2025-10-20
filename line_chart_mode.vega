@@ -1,50 +1,46 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": ["Mode of Transport in Australia over Time"],
+    "text": ["Mode of transport over time (1999-2016)"],
     "subtitle": [
-      "Australian Bureau of Statistics. (2022, June 28). Transport: Census 2021.",
-      "Retrieved from https://www.abs.gov.au/statistics/industry/tourism-and-transport/transport-census/2021",
-      "Use the dropdown option to explore different modes"
+      "Use the dropdown option to explore different modes",
+      "",
+      "Source: Bureau of Infrastructure and Transport Research Economics (BITRE). (2023). Australian infrastructure and transport statistics",
+      "yearbook 2023 - Passengers (Table 5.1). Data retrieved and visualisation created October 10, 2025,",
+      "from https://www.bitre.gov.au/publications/2023/australian-infrastructure-and-transport-statistics-yearbook-2023/passengers#dl-data",
+      ""
     ],
     "anchor": "start",
+    "font": "roboto",
     "fontSize": 18,
     "subtitleColor": "gray",
+    "subtitleFont": "roboto",
     "subtitleFontSize": 13,
     "subtitlePadding": 10
   },
-  "width": 690,
+  "width": 700,
   "height": 600,
+  "data": {"url": "passenger_travel.csv"},
   "config": {
-    "legend": {
-      "labelFont": "helvetica",
-      "titleFont": "helvetica",
-      "labelFontSize": 14,
+    "axis": {
+      "labelFont": "roboto",
+      "labelFontSize": 13,
+      "labelColor": "#535353",
+      "titleFont": "roboto",
       "titleFontSize": 14,
+      "titleColor": "#2e2e2e"
+    },
+    "legend": {
+      "titleFont": "roboto",
+      "titleFontSize": 13,      
+      "labelFont": "roboto",
+      "labelFontSize": 13,      
       "titleLimit": 0,
       "titleAnchor": "end",
-      "orient": "right"
-    },
-    "axis": {
-      "labelFont": "Helvetica",
-      "labelFontSize": 13,
-      "titleFont": "Helvetica",
-      "titleFontSize": 14
+      "orient": "right",
+      "offset": 10
     }
   },
-  "params": [
-    {
-      "name": "mode_select",
-      "value": "All",
-      "bind": {
-        "input": "select",
-        "options": ["All", "Car", "Rail", "Bus"],
-        "labels": ["All Modes", "Car", "Rail", "Bus"],
-        "name": "Transport Mode: "
-      }
-    }
-  ],
-  "data": {"url": "passenger_travel.csv"},
   "transform": [
     {
       "fold": [
@@ -62,6 +58,18 @@
       "filter": "datum.ModeLabel === mode_select || mode_select === 'All'"
     }
   ],
+  "params": [
+    {
+      "name": "mode_select",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "options": ["All", "Car", "Rail", "Bus"],
+        "labels": ["All", "Car", "Rail", "Bus"],
+        "name": "Select Transport Mode: "
+      }
+    }
+  ],
   "layer": [
     {
       "mark": {"type": "line", "point": true, "interpolate": "monotone"},
@@ -69,12 +77,17 @@
         "x": {
           "field": "Financial year",
           "type": "ordinal",
-          "axis": {"labelAngle": -45, "title": "Financial Year"}
+          "axis": {
+            "labelAngle": -45, 
+            "title": "Year",
+            "titlePadding": 15
+          }
         },
         "y": {
           "field": "Billion passenger km",
           "type": "quantitative",
-          "title": "Billion Passenger Kilometres"
+          "title": "Billion Passenger Kilometres",
+          "axis": {"titlePadding": 15}
         },
         "color": {
           "field": "ModeLabel",
@@ -83,13 +96,6 @@
           "scale": {
             "domain": ["Car", "Rail", "Bus"],
             "range": ["#685cc4", "#d49250", "#5cc46c"]
-          },
-          "legend": {
-            "titleFont": "helvetica",
-            "labelFont": "helvetica",
-            "titleLimit": 0,
-            "titleAnchor": "end",
-            "orient": "right"
           }
         },
         "tooltip": [
@@ -98,7 +104,7 @@
           {
             "field": "Billion passenger km",
             "type": "quantitative",
-            "title": "Passenger km",
+            "title": "Passenger billion km",
             "format": ".2f"
           }
         ]
@@ -140,7 +146,7 @@
         {
           "mark": {
             "type": "text",
-            "font": "Helvetica",
+            "font": "roboto",
             "fontSize": 11,
             "align": "center",
             "baseline": "top",
@@ -158,4 +164,3 @@
     }
   ]
 }
-
