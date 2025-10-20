@@ -1,17 +1,43 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": ["Transport Affordability by State compared to Capital City Average"],
-    "subtitle": "Source: Australian Bureau of Statistics, Household Expenditure Survey 2020-25",
+    "text": ["Transport affordability by city over time (2020-2025)"],
+    "subtitle": [
+      "Source: Australian Automobile Association (AAA). (n.d.). Transport affordability. Data retrieved and visualisation created October 14, 2025,",
+      "from https://www.aaa.asn.au/research-data/transport-affordability/",
+      ""
+    ],
     "anchor": "start",
+    "font": "roboto",
     "fontSize": 18,
     "subtitleColor": "gray",
+    "subtitleFont": "roboto",
     "subtitleFontSize": 13,
     "subtitlePadding": 10
   },
-  "width": 690,
+  "width": 660,
   "height": 300,
   "data": {"url": "cost_state_time.csv"},
+  "config": {
+    "axis": {
+      "labelFont": "Roboto",
+      "labelFontSize": 13,
+      "labelColor": "#535353",
+      "titleFont": "Roboto",
+      "titleFontSize": 14,
+      "titleColor": "#2e2e2e"
+    },
+    "legend": {
+      "labelFont": "Roboto",
+      "labelFontSize": 13,
+      "titleFont": "Roboto",
+      "titleFontSize": 13,
+      "titleLimit": 0,
+      "titleAnchor": "end",
+      "orient": "right",
+      "offset": 10
+    }
+  },
   "transform": [
     {
       "fold": [
@@ -70,18 +96,21 @@
       "as": "NormalizedFromLowest"
     }
   ],
-
   "mark": {
     "type": "rect", 
-    "tooltip": true
+    "tooltip": true,
+    "stroke": "white",
+    "strokeWidth": 0.2
   },
-
   "encoding": {
     "x": {
       "field": "QuarterSorted", 
       "type": "ordinal", 
       "title": "Quarter",
-      "axis": {"labelAngle": -45},
+      "axis": {
+        "labelAngle": -45,
+        "titlePadding": 15
+      },
       "sort": [
         "2016 Q1", "2016 Q2", "2016 Q3", "2016 Q4",
         "2017 Q1", "2017 Q2", "2017 Q3", "2017 Q4", 
@@ -99,7 +128,8 @@
       "field": "City", 
       "type": "ordinal", 
       "title": "City",
-      "sort": null
+      "sort": null,
+      "axis": {"titlePadding": 15}
     },
 "color": {
   "field": "RelativeToCapital",
@@ -107,15 +137,15 @@
   "title": "% to Capital Avg.",
   "scale": {
     "range": [
-      "#B14646",
-      "#D87671",
-      "#F5B2AE",
-      "#FFD1CB",
-      "#FFFFFF",
-      "#C8D7FF",
-      "#8EB1EE",
+      "316FCB",
       "#628BCC",
-      "316FCB"
+      "#8EB1EE",
+      "#C8D7FF",
+      "#FFFFFF",
+      "#FFD1CB",
+      "#F5B2AE",
+      "#D87671",
+      "#B14646"
     ],
     "domainMid": 0
   }
@@ -127,23 +157,5 @@
       {"field": "CapitalAvgCost", "type": "quantitative", "title": "Capital Avg. ($)", "format": ".2f"},
       {"field": "RelativeToCapital", "type": "quantitative", "title": "vs Capital Avg. (%)", "format": ".1f"}
     ]
-  },
-  
-  "config": {
-    "axis": {
-      "labelFont": "helvetica",
-      "titleFont": "helvetica"
-    },
-    "view": {
-      "stroke": "transparent"
-    },
-
-    "legend": {
-      "labelFont": "helvetica",
-      "titleFont": "helvetica",
-      "titleLimit": 0,
-      "titleAnchor": "end",
-      "orient": "right"
-  }
   }
 }
